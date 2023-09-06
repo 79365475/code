@@ -1,4 +1,5 @@
 # code
+!APDL code for M.heat source.
 CMSEL,ALL
 *GET,EMAX,ELEM„NUM,MAX
 *GET,EMIN,ELEM„NUM,MIN
@@ -46,3 +47,29 @@ Cooling_time=1000
 TIME,Cooling_time
 NSUBST,1000,1000,1000
 SOLVE
+
+
+#code for martensite phase
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+# Define the value of Am
+Am = 0.00022
+Tm=642.51 # Load the Excel file into a DataFrame (the data is in "ngenzi.xlsx"
+in the second column)
+data = pd.read_excel("ngenzi.xlsx", usecols=[1], header=None)
+# Convert the column to a numeric type, coercing non-convertible values to NaN
+data.iloc[:, 0] = pd.to_numeric(data.iloc[:, 0], errors=’coerce’)
+# Filter the data to select T values within the desired range (642.51 to 450)
+filtered_data = data[(data.iloc[:, 0] >= 450) & (data.iloc[:, 0] <= 642.51)]
+# Extract the T values from the filtered data
+T_values = filtered_data.iloc[:, 0]
+# Calculate the result using the equation for each T value
+results = 1 - np.exp(-Am * (Tm - T_values))
+# Create a plot of the results
+plt.plot(T_values, results)
+plt.xlabel("T")
+plt.ylabel("Result")
+plt.title("martensite volume fraction")
+#plt.grid(True)
+plt.show()
